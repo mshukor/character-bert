@@ -40,6 +40,14 @@ def parse_args():
         help="The evaluation task."
     )
     parser.add_argument(
+        "--dataset-name",
+        type=str,
+        required=True,
+        choices=['imdb', 'toy'],
+        help="The dataset name."
+    )
+
+    parser.add_argument(
         "--embedding",
         type=str,
         required=True,
@@ -173,7 +181,7 @@ def main(args):
         else:
             raise NotImplementedError
 
-        data[split] = func(step=split, do_lower_case=args.do_lower_case)
+        data[split] = func(step=split, do_lower_case=args.do_lower_case, dataset_name=args.dataset_name)
         retokenize(data[split], tokenization_function)
 
     logging.info('Splitting training data into train / validation sets...')

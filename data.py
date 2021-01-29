@@ -15,11 +15,11 @@ SequenceLabellingExample = namedtuple(
     'SequenceLabellingExample', ['id', 'token_sequence', 'label_sequence'])
 
 
-def load_classification_dataset(step, do_lower_case):
+def load_classification_dataset(step, do_lower_case, dataset_name="toy"):
     """ Loads classification exampels from a dataset. """
     assert step in ['train', 'test']
     basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
-    path = os.path.join(DATA_PATH, 'classification', f'{step}.txt')
+    path = os.path.join(DATA_PATH, 'classification', dataset_name, f'{step}.txt')
     examples = []
     with open(path, 'r', encoding='utf-8') as data_file:
         lines = data_file.readlines()
@@ -88,3 +88,4 @@ def load_sequence_labelling_dataset(step, do_lower_case):
         tokenization_function=BasicTokenizer(do_lower_case=do_lower_case).tokenize)
     logging.info('Number of `%s` examples: %d', step, len(examples))
     return examples
+

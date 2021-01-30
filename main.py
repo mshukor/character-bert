@@ -180,8 +180,11 @@ def main(args):
             func = load_sequence_labelling_dataset
         else:
             raise NotImplementedError
-
-        data[split] = func(step=split, do_lower_case=args.do_lower_case, dataset_name=args.dataset_name)
+        if split=="test":
+            size = 500
+        else:
+            size = 2500
+        data[split] = func(step=split, do_lower_case=args.do_lower_case, dataset_name=args.dataset_name, size=size)
         retokenize(data[split], tokenization_function)
 
     logging.info('Splitting training data into train / validation sets...')

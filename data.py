@@ -15,7 +15,7 @@ SequenceLabellingExample = namedtuple(
     'SequenceLabellingExample', ['id', 'token_sequence', 'label_sequence'])
 
 
-def load_classification_dataset(step, do_lower_case, dataset_name="toy"):
+def load_classification_dataset(step, do_lower_case, dataset_name="toy", size=1000):
     """ Loads classification exampels from a dataset. """
     assert step in ['train', 'test']
     basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
@@ -36,6 +36,8 @@ def load_classification_dataset(step, do_lower_case, dataset_name="toy"):
                     label=label,
                 )
             )
+            if i > size:
+                break
     logging.info('Number of `%s` examples: %d', step, len(examples))
     return examples
 

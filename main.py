@@ -117,6 +117,9 @@ def parse_args():
         default=42,
         help="Random seed."
     )
+    parser.add_argument("--train_size", type=int, default=2500)
+
+    parser.add_argument("--test_size", type=int, default=500)
 
     args = parser.parse_args()
     args.start_time = datetime.datetime.now().strftime('%d-%m-%Y_%Hh%Mm%Ss')
@@ -181,9 +184,9 @@ def main(args):
         else:
             raise NotImplementedError
         if split=="test":
-            size = 500
+            size = args.test_size
         else:
-            size = 2500
+            size = args.train_size
         data[split] = func(step=split, do_lower_case=args.do_lower_case, dataset_name=args.dataset_name, size=size)
         retokenize(data[split], tokenization_function)
 
@@ -235,9 +238,9 @@ def main(args):
     labels = sorted(counter_all.keys())
     num_labels = len(labels)
 
-    logging.info("Goal: predict the following labels")
-    for i, label in enumerate(labels):
-        logging.info("* %s: %s (count: %s)", label, i, counter[label])
+    # logging.info("Goal: predict the following labels")
+    # for i, label in enumerate(labels):
+    #     logging.info("* %s: %s (count: %s)", label, i, counter[label])
 
     # Input features: list[token indices] (BERT) or list[list[character indices]] (CharacterBERT)
     pad_token_id = None

@@ -121,6 +121,8 @@ def parse_args():
 
     parser.add_argument("--test_size", type=int, default=500)
 
+    parser.add_argument("--test_dir", type=str, default=None)
+
     args = parser.parse_args()
     args.start_time = datetime.datetime.now().strftime('%d-%m-%Y_%Hh%Mm%Ss')
     args.output_dir = os.path.join(
@@ -329,6 +331,9 @@ def main(args):
             raise NotImplementedError
 
         logging.disable(logging.INFO)
+        if args.test_dir is not None:
+            args.output_dir = args.test_dir
+            
         if 'character' not in args.embedding:
             model = model.from_pretrained(args.output_dir)
         else:

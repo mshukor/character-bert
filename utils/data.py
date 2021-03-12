@@ -138,7 +138,7 @@ def convert_examples_to_features__classification(
             segment_ids += [1] * (len(tokens_b) + 1)
 
         # Tokenization of inputs
-        if args.embedding == 'bert-base-uncased':
+        if 'character' not in args.embedding:
             input_ids = tokenizer.convert_tokens_to_ids(tokens)
         else:
             input_ids = tokenizer.as_padded_tensor([tokens], maxlen=max_seq_length)[0]
@@ -149,7 +149,7 @@ def convert_examples_to_features__classification(
 
         # Zero-pad up to the sequence length.
         padding_length = max_seq_length - len(input_mask)
-        if args.embedding == 'bert-base-uncased':
+        if 'character' not in args.embedding:
             input_ids += [pad_token_id] * padding_length
         input_mask += [0] * padding_length
         segment_ids += [0] * padding_length
@@ -238,7 +238,7 @@ def convert_examples_to_features__tagging(
         segment_ids = [0] + segment_ids
 
         # Tokenization of inputs
-        if args.embedding == 'bert-base-uncased':
+        if 'character' not in args.embedding:
             input_ids = tokenizer.convert_tokens_to_ids(tokens)
         else:
             input_ids = tokenizer.as_padded_tensor([tokens], maxlen=max_seq_length)[0]
@@ -249,7 +249,7 @@ def convert_examples_to_features__tagging(
 
         # Zero-pad up to the sequence length.
         padding_length = max_seq_length - len(input_mask)
-        if args.embedding == 'bert-base-uncased':
+        if 'character' not in args.embedding:
             input_ids += [pad_token_id] * padding_length
         input_mask += [0] * padding_length
         segment_ids += [0] * padding_length
@@ -294,7 +294,7 @@ def build_features(
     )
 
     # Convert to Tensors and build dataset
-    if args.embedding == 'bert-base-uncased':
+    if 'character' not in args.embedding:
         all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
     else:
         all_input_ids = torch.tensor([f.input_ids.tolist() for f in features], dtype=torch.long)

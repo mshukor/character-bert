@@ -41,7 +41,7 @@ def load_classification_dataset(step, do_lower_case, dataset_name="toy", size=10
     logging.info('Number of `%s` examples: %d', step, len(examples))
     return examples
 
-def load_sequence_labelling_dataset(step, do_lower_case):
+def load_sequence_labelling_dataset(step, do_lower_case, dataset_name="snips", size=None):
     """ Loads sequence labelling examples from a dataset. """
     assert step in ['train', 'test']
     path = os.path.join(DATA_PATH, 'sequence_labelling', f'{step}.txt')

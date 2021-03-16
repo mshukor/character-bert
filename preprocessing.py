@@ -32,7 +32,7 @@ for folder in file_list:
 
         for (w,l) in zip(words,labels):
           output_file.write(w+" "+l+"\n")
-      
+        output_file.write("\n")
         #if i>max_n:break
       
     output_file.close()

@@ -26,8 +26,8 @@ for folder in file_list:
 
     for i,(seq_in, seq_out) in enumerate(zip(in_list,out_list)):
         print(i)
-        words = seq_in.split(' ')
-        labels = seq_out.split(' ')
+        words = seq_in.split()
+        labels = seq_out.split()
         #print(words, end='')
 
         for (w,l) in zip(words,labels):

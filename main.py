@@ -42,7 +42,7 @@ def parse_args():
     parser.add_argument(
         "--dataset-name",
         type=str,
-        required=True,
+        required=False,
         choices=['imdb', 'toy'],
         help="The dataset name."
     )

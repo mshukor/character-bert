@@ -1,9 +1,9 @@
-# CharacterBERT for general domain downstream task
+# CharacterBERT for general domain downstream tasks
 
 [paper]: https://arxiv.org/abs/2010.10392
 
 
-This repository contains an implementation of several experiments aiming at investigating the effectiveness of [CharacterBERT][paper] and comppare it to BERT for some downstream tasks. The work is done during the Speech and NLP course at the MVA master at ENS Paris-Saclay
+This repository contains an implementation of several experiments aiming at investigating the effectiveness of [CharacterBERT][paper] and compare it to BERT for some downstream tasks. The work is done during the Speech and NLP course at the MVA master at ENS Paris-Saclay.
 
 ## Abstract
 It is known that Wordpieces embedding, which is used in BERT variants, induces a bias when a model is trained on a general domain and fine tuned on a specific domain. To overcome this, CharacterBERT is a new variant that replaces the wordpieces embedding by the ELMo's Character-CNN module, that instead, consults each character. We will investigate the effectiveness of this new variant and compare it to BERT on several downstream NLP tasks. As the authors showed encouraging results on downstream medical domain tasks, as well as for robustness against noise and misspellings, in this work we will address another question and show that even for general domain downstream tasks, CharacterBERT is slightly better than BERT, but at the expense of loosing training speed.

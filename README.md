@@ -133,7 +133,19 @@ python main.py \
 ```
 CharacterBERT should give slightly better preformance than BERT.
 
+### Sequence Labeling task (Intent Recognition)
+Text intent recognition is the process of understanding a user's end goal given what they have said or typed. Intent recognition is the first step in turning a human request into a machine-executable command. 
 
+First, you should download data (Snips Dataset or Atis dataset) and put it in the data directory.
+
+Then you should preprocess the dataset:
+
+```
+python preprocessing.py --data data/
+```
+
+To train BERT and CharacterBERT models, you can use the same commands as in Classification task except by modifying the task parameter to sequence_labeling.
+Also, you should obtain slightly similar results for BERT and CharacterBERT.
 
 ### Using CharacterBERT in practice
 
@@ -248,4 +260,4 @@ You can adapt the `run_experiments.sh` script to try out any available model. Yo
 
 ## Aknowledgement
 
-The implementation was mainly based on the author original [implementation][https://github.com/helboukkouri/character-bert]
+The implementation was mainly based on the author original [implementation](https://github.com/helboukkouri/character-bert)

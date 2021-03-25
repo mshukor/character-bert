@@ -246,3 +246,6 @@ bash run_experiments.sh
 You can adapt the `run_experiments.sh` script to try out any available model. You should also be able to add real classification and sequence labelling tasks by adapting the `data.py` script.
 
 
+## Aknowledgement
+
+The implementation was mainly based on the author original [implementation][https://github.com/helboukkouri/character-bert]

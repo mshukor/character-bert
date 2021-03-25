@@ -1,46 +1,30 @@
-# CharacterBERT
+# CharacterBERT for general domain downstream task
 
 [paper]: https://arxiv.org/abs/2010.10392
 
-This is the repository of the paper "[CharacterBERT: Reconciling ELMo and BERT for Word-LevelOpen-Vocabulary Representations From Characters][paper]" that is soon to appear at COLING 2020.
 
-## Table of contents
+This repository contains an implementation of several experiments aiming at investigating the effectiveness of [CharacterBERT][paper] and comppare it to BERT for some downstream tasks. The work is done during the Speech and NLP course at the MVA master at ENS Paris-Saclay
 
-- [Paper summary](#paper-summary)
-  - [TL;DR](#tldr)
-  - [Motivations](#motivations)
-- [How do I use CharacterBERT?](#how-do-i-use-characterbert)
-  - [Installation](#installation)
-  - [Pre-trained models](#pre-trained-models)
-  - [Using CharacterBERT in practice](#using-characterbert-in-practice)
-- [How do I pre-train CharacterBERT?](#how-do-i-pre-train-characterbert)
-- [How do I reproduce the paper's results?](#how-do-i-reproduce-the-papers-results)
-- [Running experiments on GPUs](#running-experiments-on-gpus)
-- [References](#references)
+## Abstract
+It is known that Wordpieces embedding, which is used in BERT variants, induces a bias when a model is trained on a general domain and fine tuned on a specific domain. To overcome this, CharacterBERT is a new variant that replaces the wordpieces embedding by the ELMo's Character-CNN module, that instead, consults each character. We will investigate the effectiveness of this new variant and compare it to BERT on several downstream NLP tasks. As the authors showed encouraging results on downstream medical domain tasks, as well as for robustness against noise and misspellings, in this work we will address another question and show that even for general domain downstream tasks, CharacterBERT is slightly better than BERT, but at the expense of loosing training speed.
 
-## Paper summary
+## Introduction
+Language models pretraining have achieved tremendous success in downstream natural language processing (NLP) tasks, which is due to the good language representation obtained by such models. 
+The best techniques so far are based on bidirectional models (such as BERT) with wordpieces tokenization, which outperformed the previous unidirectional (left to right and right to left) models in learning language representations. As a result, many variants of BERT were adopted and used in the recent years enjoying the expressive and modeling power of BERT. 
 
-### TL;DR
+Due the growing complexity of such models, the standard way to train a model on a specific language domain is by fine-tuning a model trained on a general domain. For wordpieces based models, how effective the transfer is depends on how suitable the general domain vocabulary is to the specific domain one, a constraint that, if discarded, introduces a bias in the transfer process. 
 
-CharacterBERT is a variant of [BERT](https://arxiv.org/abs/1810.04805) that produces **word-level contextual representations** by attending to the characters of each input token. To achieve that, instead of relying on a matrix of pre-defined wordpieces, it uses a [CharacterCNN](link-to-charcnn) module similar to [ELMo](https://arxiv.org/abs/1802.05365) to produce representations for arbitrary tokens. Besides this difference, CharacterBERT's architecture is identical BERT's.
+A recent variant (CharacterBERT) proposes to produce a word level contextual representation by consulting each character, which avoid any bias. Specifically, BERT's wordpieces embedding layer is replaced by the ELMo's Character-CNN module while keeping the remaining architecture, which is also more robust to noise and misspellings. 
+
+The aim of this project is to compare BERT and CharachterBERT and test the effectiveness of the latter on some downstream NLP tasks (such as classification and sequence labeling). 
+The authors showed that CharacterBERT is better than BERT when finetuning it on a specific domain. In addition they showed that it is also robust to noise and misspelling. 
+In this work, we are curious about answering the following question: Is the Character-CNN layer used in CharacterBERT better than the embedding layer used in BERT for general domain downstream tasks? that is, after excluding any source of bias, noise and misspelling, is there any benefits of using CharacterBERT?\\
+As CharacterBERT is the same as BERT except for the embedding layer, we will start by explaining BERT before explaining the working principle of the Character-CNN. Finally we will present the experiments that we did to answer the underlying question.
 
 <div style="text-align:center">
     <br>
     <img src="./img/archi-compare.png" width="45%"/>
 </div>
-The figure above shows the way context-independent representations are built in BERT and CharacterBERT. Here, we suppose that "Apple" is an unknown token and see that BERT splits it into two wordpieces "Ap" and "##ple" before embedding each unit. On the other hand, CharacterBERT receives the token "Apple" as is then attends to its characters to produce a single token embedding.
-
-## Motivations
-
-CharacterBERT has two main motivations:
-
-- In more and more cases, the original BERT is adapted to new domains (e.g. medical domain) by re-training it on specialized corpora. In these cases, the original (general domain) wordpiece vocabulary is kept despite the model being actually used on a different domain, which seemed suboptimal (see _Section 2_ of the paper). A naive solution would be to train a new BERT from scratch with a specialized wordpiece vocabulary, but training a single BERT is costly let alone training one for each and every domain of interest.
-
-- BERT uses a wordpiece system as a good compromise between the specificity of tokens and generality of characters. However, working with subwords is not very convenient in practice (Should we average the representations to get the original token embedding for word similarity tasks ? Should we only use the first wordpiece of each token in sequence labelling tasks ? ...)
-
-Inspired by ELMo, we use a CharacterCNN module and manage to get a variant of BERT that produces word-level contextual representations and can be re-adapted on any domain without needing to worry about the suitability of any wordpieces. Moreover, attending to the characters of input tokens also allows us to achieve superior robustness to noise (see _Section 5.5_ of the paper).
-
-## How do I use CharacterBERT?
 
 ### Installation
 
@@ -100,6 +84,56 @@ Or you can download all models by running:
 ```bash
 python download.py --model='all'
 ```
+
+### Classification task (Sentiment analysis)
+This task consists of classifying movie reviews (IMDB datset) as positive or negative.
+
+To download and unzip the dataset:
+```
+wget http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz
+tar zxvf aclImdb_v1.tar.gz
+mv aclImdb/ data/classification/imdb
+```
+
+Then you should preprocess the dataset:
+
+```
+python preprocess_imdb.py --datadir data/classification/imdb/
+```
+
+To train general CharacterBERT:
+```
+python main.py \
+    --task='classification' \
+    --embedding='general_character_bert' \
+    --do_lower_case \
+    --do_predict \
+    --dataset-name "imdb" \
+    --num_train_epochs 10 \
+    --train_batch_size 6 \
+    --eval_batch_size 6 \
+    --validation_ratio 0.15 \
+    --train_size 100 \
+    --do_train \
+```
+To train BERT:
+```
+python main.py \
+    --task='classification' \
+    --embedding='general_bert' \
+    --do_lower_case \
+    --do_predict \
+    --dataset-name "imdb" \
+    --num_train_epochs 10 \
+    --train_batch_size 6 \
+    --eval_batch_size 6 \
+    --validation_ratio 0.15 \
+    --train_size 100 \
+    --do_train \
+```
+CharacterBERT should give slightly better preformance than BERT.
+
+
 
 ### Using CharacterBERT in practice
 
@@ -211,58 +245,4 @@ bash run_experiments.sh
 
 You can adapt the `run_experiments.sh` script to try out any available model. You should also be able to add real classification and sequence labelling tasks by adapting the `data.py` script.
 
-## How do I pre-train CharacterBERT?
 
-Please refer to the following repository: <https://github.com/helboukkouri/character-bert-pretraining>
-
-## How do I reproduce the paper's results?
-
-Please refer to the following repository: <https://github.com/helboukkouri/character-bert-finetuning>
-
-## Running experiments on GPUs
-
-In order to use GPUs you will need to make sure the PyTorch version that is in your conda environment matches your machine's configuration. To do that, you may want to run a few tests.
-
-Let's assume you want to use the GPU n°0 on your machine. Then set:
-
-```bash
-export CUDA_VISIBLE_DEVICES=0
-```
-
-And run these commands to check whether pytorch can detect your GPU:
-
-```python
-import torch
-print(torch.cuda.is_available())  # Should return `True`
-```
-
-If the last command returns `False`, then there is probably a mismatch between the installed PyTorch version and your machine's configuration. To fix that, run `nvidia-smi` in your terminal and check your driver version:
-
-<center><img src="img/nvidiasmi.png" alt="drawing" width="550"/></center>
-
-Then compare this version with the numbers given in the [NVIDIA CUDA Toolkit Release Notes](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html):
-
-<center><img src="img/cudaversions.png" alt="drawing" width="800"/></center>
-
-In this example the shown version is `390.116` which corresponds to `CUDA 9.0`. This means that the appropriate command for installing PyTorch is:
-
-```bash
-conda install pytorch cudatoolkit=9.0 -c pytorch
-```
-
-Now, everything should work fine!
-
-## References
-
-Please cite our paper if you use CharacterBERT in your work:
-
-```
-@misc{boukkouri2020characterbert,
-      title={CharacterBERT: Reconciling ELMo and BERT for Word-Level Open-Vocabulary Representations From Characters}, 
-      author={Hicham El Boukkouri and Olivier Ferret and Thomas Lavergne and Hiroshi Noji and Pierre Zweigenbaum and Junichi Tsujii},
-      year={2020},
-      eprint={2010.10392},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
-}
-```
